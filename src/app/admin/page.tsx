@@ -16,7 +16,8 @@ export default function AdminPage() {
     deleteTask,
     updateTaskProgress,
     updateTaskStatus,
-    loadFromStorage,
+    loadFromDatabase,
+    migrateFromLocalStorage,
     generateShareId,
   } = useAppStore();
 
@@ -26,20 +27,25 @@ export default function AdminPage() {
   const [showProjectForm, setShowProjectForm] = useState(false);
 
   useEffect(() => {
-    loadFromStorage();
-  }, [loadFromStorage]);
+    const initializeData = async () => {
+      await loadFromDatabase();
+      // LocalStorageからのマイグレーションを実行
+      await migrateFromLocalStorage();
+    };
+    initializeData();
+  }, [loadFromDatabase, migrateFromLocalStorage]);
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
     if (projectName.trim()) {
-      createProject(projectName.trim());
+      await createProject(projectName.trim());
       setShowProjectForm(false);
       setProjectName('');
     }
   };
 
-  const handleTaskSubmit = (formData: TaskFormData) => {
+  const handleTaskSubmit = async (formData: TaskFormData) => {
     if (editingTask) {
-      updateTask(editingTask.id, {
+      await updateTask(editingTask.id, {
         title: formData.title,
         description: formData.description,
         deadline: new Date(formData.deadline),
@@ -50,7 +56,7 @@ export default function AdminPage() {
       });
       setEditingTask(null);
     } else {
-      addTask(formData);
+      await addTask(formData);
     }
     setShowTaskForm(false);
   };
@@ -60,14 +66,14 @@ export default function AdminPage() {
     setShowTaskForm(true);
   };
 
-  const handleDeleteTask = (taskId: string) => {
+  const handleDeleteTask = async (taskId: string) => {
     if (confirm('このタスクを削除しますか？')) {
-      deleteTask(taskId);
+      await deleteTask(taskId);
     }
   };
 
-  const handleGenerateShareId = () => {
-    generateShareId();
+  const handleGenerateShareId = async () => {
+    await generateShareId();
     alert('共有IDが生成されました！');
   };
 
@@ -182,8 +188,8 @@ export default function AdminPage() {
                   task={task}
                   onEdit={() => handleEditTask(task)}
                   onDelete={() => handleDeleteTask(task.id)}
-                  onProgressChange={(progress) => updateTaskProgress(task.id, progress)}
-                  onStatusChange={(status) => updateTaskStatus(task.id, status)}
+                  onProgressChange={async (progress) => await updateTaskProgress(task.id, progress)}
+                  onStatusChange={async (status) => await updateTaskStatus(task.id, status)}
                 />
               ))}
             </div>

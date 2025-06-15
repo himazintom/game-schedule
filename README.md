@@ -22,9 +22,10 @@
 - 👁️ 閲覧専用モード
 
 ### データ管理
-- 💾 LocalStorageによる自動保存
+- 🗄️ Supabase PostgreSQLデータベース
+- 💾 LocalStorageフォールバック対応
 - 📤 JSON形式でのエクスポート/インポート
-- 🔄 リアルタイム同期
+- 🔄 リアルタイム同期・マルチユーザー対応
 
 ## 🚀 デモ
 
@@ -48,8 +49,10 @@
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS
 - **状態管理**: Zustand
+- **データベース**: Supabase (PostgreSQL)
+- **リアルタイム**: Supabase Realtime
 - **日付処理**: date-fns
-- **データ永続化**: LocalStorage
+- **フォールバック**: LocalStorage
 
 ## 🔧 開発環境での実行
 
@@ -64,12 +67,20 @@ cd game-schedule
 npm install
 \`\`\`
 
-3. 開発サーバーを起動
+3. 環境変数を設定
+\`\`\`bash
+cp .env.local.example .env.local
+# .env.localにSupabase設定を追加
+\`\`\`
+
+4. 開発サーバーを起動
 \`\`\`bash
 npm run dev
 \`\`\`
 
-4. ブラウザで http://localhost:3000 を開く
+5. ブラウザで http://localhost:3000 を開く
+
+📋 **Supabase設定**: 詳細は [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) を参照
 
 ## 📦 ビルド
 

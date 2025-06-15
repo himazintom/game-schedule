@@ -13,7 +13,7 @@ interface SharePageProps {
 }
 
 export default function SharePage({ params }: SharePageProps) {
-  const { project, loadFromStorage } = useAppStore();
+  const { loadProjectByShareId } = useAppStore();
   const [sharedProject, setSharedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,24 +21,28 @@ export default function SharePage({ params }: SharePageProps) {
 
   useEffect(() => {
     params.then(p => setShareId(p.id));
-    loadFromStorage();
-  }, [params, loadFromStorage]);
+  }, [params]);
 
   useEffect(() => {
-    if (project && shareId) {
-      if (project.shareId === shareId) {
-        setSharedProject(project);
-      } else {
-        setError('共有IDが見つかりません');
-      }
-      setLoading(false);
-    } else if (shareId) {
-      setTimeout(() => {
-        setError('プロジェクトが見つかりません');
-        setLoading(false);
-      }, 1000);
+    if (shareId) {
+      const loadSharedProject = async () => {
+        try {
+          const project = await loadProjectByShareId(shareId);
+          if (project) {
+            setSharedProject(project);
+          } else {
+            setError('共有IDが見つかりません');
+          }
+        } catch {
+          setError('プロジェクトの読み込みに失敗しました');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadSharedProject();
     }
-  }, [project, shareId]);
+  }, [shareId, loadProjectByShareId]);
 
   if (loading) {
     return (
