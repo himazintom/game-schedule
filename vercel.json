@@ -1,11 +1,5 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
-  "regions": ["nrt1"],
-  "functions": {
-    "src/app/**": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }
